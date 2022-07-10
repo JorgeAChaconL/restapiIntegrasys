@@ -25,7 +25,7 @@ app.all("*",function(req,res,next){
 
 app.use('/tickets',ticketRoutes);
 
-mongoose.connect(url,{useNewUrlParser:true, useUnifiedTopology: true})
+mongoose.connect(url,{useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true})
 const connection = mongoose.connection;
 
 
