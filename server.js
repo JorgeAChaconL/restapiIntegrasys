@@ -25,7 +25,7 @@ app.all("*",function(req,res,next){
 
 app.use('/tickets',ticketRoutes);
 
-mongoose.connect(url,{useNewUrlParser: true})
+mongoose.connect(url,{useNewUrlParser:true})
 const connection = mongoose.connection;
 
 
@@ -92,9 +92,9 @@ ticketRoutes.route('/update/:id').post(function(req,res){
 })
 
 let port = process.env.PORT;
-
 if (port == null || port == "") {
   port = 8000;
 }
+app.listen(port);
 
 app.listen(process.env.PORT);
