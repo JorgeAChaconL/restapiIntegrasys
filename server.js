@@ -9,12 +9,19 @@ const url = process.env.MONGO_URI;
 const Ticket = require('./models/ticket');
 
 
-const port = 8080;
+
 var app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
+
+app.all("*",function(req,res,next){
+    res.header("Access-Control-Allow-Origin","*");
+    res.header("Access-Control-Allow-Methods","PUT,GET,POST,DELETE,OPTIONS");
+    res.header("Access-Control-Allow-Headers","Content-Type");
+    next();
+})
 
 app.use('/tickets',ticketRoutes);
 
@@ -23,7 +30,7 @@ const connection = mongoose.connection;
 
 
 connection.once('open',function(){
-  connection.useDb('Integrasys').collection('Tickets');
+  
   console.log(`MongoDB connection established`)
 })
 
@@ -50,6 +57,7 @@ ticketRoutes.route('/add').post(function(req,res){
   ticket.save()
         .then(ticket=>{
             res.status(200).json({'ticket':'Ticket added succesfully'});
+           
         })
         .catch(err=>{
           res.status(400).send(`adding new Ticket failed,error: ${err}`);
@@ -57,21 +65,22 @@ ticketRoutes.route('/add').post(function(req,res){
 })
 
 ticketRoutes.route('/update/:id').post(function(req,res){
+  let ticket = new Ticket(req.body);
   Ticket.findById(req.params.id, function(err,ticket){
     if(!ticket)
       res.status(404).send('Ticket not found');
     else
       _id = req.params.id;
-      ticket.clientName = req.body.clientName;
-      ticket.phoneNumber = req.body.phoneNumber;
-      ticket.device = req.body.device;
-      ticket.charger = req.body.charger;
-      ticket.accesories = req.body.accesories;
-      ticket.battery = req.body.battery;
-      ticket.cables = req.body.cables;
-      ticket.report = req.body.report
-      ticket.observation = req.body.observation;
-      ticket.status = req.body.status;
+      ticket.ticket_clientName = req.body.clientName;
+      ticket.ticket_phoneNumber = req.body.phoneNumber;
+      ticket.ticket_device = req.body.device;
+      ticket.ticket_charger = req.body.charger;
+      ticket.ticket_accesories = req.body.accesories;
+      ticket.ticket_battery = req.body.battery;
+      ticket.ticket_cables = req.body.cables;
+      ticket.ticket_report = req.body.report
+      ticket.ticket_observation = req.body.observation;
+      ticket.ticket_status = req.body.status;
 
       ticket.save().then(ticket =>{
         res.json(`Ticket ${_id} updated` )
@@ -82,7 +91,10 @@ ticketRoutes.route('/update/:id').post(function(req,res){
   })
 })
 
+let port = process.env.PORT;
+if (port == null || port == "") {
+  port = 8000;
+}
+app.listen(port);
 
-app.listen(port, () => {
-  console.log(`API running on port: ${port}`);
-});
+app.listen(process.env.PORT);
